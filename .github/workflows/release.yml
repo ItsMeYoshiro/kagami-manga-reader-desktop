@@ -1,0 +1,75 @@
+name: Release
+
+# Builds the Windows installer on GitHub's runners and records where it came
+# from. The point is not the build -- `npm run dist` does the same thing on any
+# machine -- but the provenance: an installer built here can be traced back to
+# this repository, this commit and this workflow run.
+#
+# The installer is still unsigned, so Windows SmartScreen will warn either way.
+# Attestation answers a different question: not "does Windows trust this
+# publisher" but "is this file really what this source code builds into".
+#
+#   gh attestation verify Kagami-0.1.0-x64.exe \
+#     --repo ItsMeYoshiro/kagami-manga-reader-desktop
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing release tag to build for and attach the installer to'
+        required: true
+
+permissions:
+  contents: write # attach the installer to the release
+  id-token: write # mint the short-lived Sigstore signing certificate
+  attestations: write # record the provenance statement
+
+env:
+  SUWAYOMI: v2.3.2243
+
+jobs:
+  windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # The server bundle is a ~500 MB release artifact, so it is not in the
+      # repository. Both paths.ts and electron-builder look for it next to the
+      # checkout -- the same layout the README asks contributors for.
+      - name: Fetch Suwayomi-Server
+        shell: bash
+        run: |
+          name="Suwayomi-Server-${SUWAYOMI}-windows-x64"
+          curl -fL --retry 3 -o server.zip \
+            "https://github.com/Suwayomi/Suwayomi-Server/releases/download/${SUWAYOMI}/${name}.zip"
+          mkdir -p ../server
+          tar -xf server.zip -C ../server
+          rm server.zip
+          test -f "../server/${name}/bin/Suwayomi-Server.jar" || {
+            echo "the bundle did not unpack where the build expects it"; ls -R ../server | head -40; exit 1
+          }
+
+      - run: npm ci
+
+      - run: npm run dist
+
+      - name: Attest the installer
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: dist/Kagami-*-x64.exe
+
+      - name: Attach to the release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="${{ inputs.tag || github.ref_name }}"
+          gh release upload "$tag" dist/Kagami-*-x64.exe --clobber
