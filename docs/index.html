@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kagami — a manga reader for Windows</title>
+<meta name="description" content="A desktop manga reader for Windows, built on Mihon's extension ecosystem. One installer, no Java to set up.">
+<meta name="color-scheme" content="dark">
+
+<meta property="og:title" content="Kagami — a manga reader for Windows">
+<meta property="og:description" content="A desktop manga reader for Windows, built on Mihon's extension ecosystem. One installer, no Java to set up.">
+<meta property="og:type" content="website">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #0c0b0f;
+    --surface: #131218;
+    --raised: #1b1a21;
+    --raised2: #24222c;
+    --line: #2e2c38;
+    --txt: #ece9f2;
+    --txt2: #a8a3b6;
+    --txt3: #6f6b7e;
+    --accent: #c0aef5;
+    --accent-ink: #191527;
+    --display: 'Zen Kaku Gothic New', 'Yu Gothic', sans-serif;
+    --sans: 'IBM Plex Sans', system-ui, sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--txt);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--accent); }
+
+  .wrap { width: min(1080px, calc(100% - 3rem)); margin-inline: auto; }
+
+  /* ---- hero ---------------------------------------------------------- */
+
+  .hero {
+    padding: 5.5rem 0 4rem;
+    text-align: center;
+    background:
+      radial-gradient(60rem 30rem at 50% -10%, rgba(192, 174, 245, 0.16), transparent 70%),
+      var(--bg);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .mark {
+    width: 84px; height: 84px;
+    margin: 0 auto 1.25rem;
+    display: grid; place-items: center;
+    border-radius: 22px;
+    background: linear-gradient(140deg, #d6c8ff, #a08ce8);
+    color: var(--accent-ink);
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 46px;
+    line-height: 1;
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(2.6rem, 7vw, 3.6rem);
+    letter-spacing: 0.02em;
+    margin: 0 0 0.5rem;
+  }
+
+  .tagline {
+    margin: 0 auto 2.25rem;
+    max-width: 40ch;
+    color: var(--txt2);
+    font-size: 1.15rem;
+  }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.85rem 1.9rem;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-weight: 600;
+    font-size: 1.05rem;
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .cta:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(192, 174, 245, 0.25); }
+
+  .meta { margin-top: 0.9rem; color: var(--txt3); font-size: 0.9rem; }
+  .meta a { color: var(--txt2); }
+
+  /* ---- sections ------------------------------------------------------ */
+
+  section { padding: 4.5rem 0; border-bottom: 1px solid var(--line); }
+  section:last-of-type { border-bottom: 0; }
+
+  h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 1.9rem;
+    margin: 0 0 0.4rem;
+  }
+
+  .lede { color: var(--txt2); max-width: 62ch; margin: 0 0 2rem; }
+
+  p { max-width: 68ch; }
+
+  /* ---- notice -------------------------------------------------------- */
+
+  .notice {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.4rem 1.6rem;
+  }
+  .notice h3 { margin: 0 0 0.5rem; font-size: 1.05rem; font-weight: 600; }
+  .notice p { margin: 0 0 0.9rem; color: var(--txt2); }
+  .notice p:last-child { margin-bottom: 0; }
+
+  pre {
+    background: var(--raised);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 0.9rem 1.1rem;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--txt2);
+    margin: 0.8rem 0 0;
+  }
+  code { font-family: var(--mono); font-size: 0.9em; color: var(--txt); }
+
+  /* ---- how it works -------------------------------------------------- */
+
+  .flow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+    counter-reset: step;
+  }
+  .step {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.4rem;
+  }
+  .step::before {
+    counter-increment: step;
+    content: counter(step);
+    display: grid; place-items: center;
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: var(--raised2);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    margin-bottom: 0.85rem;
+  }
+  .step h3 { margin: 0 0 0.4rem; font-size: 1rem; font-weight: 600; }
+  .step p { margin: 0; color: var(--txt2); font-size: 0.92rem; }
+
+  /* ---- shots --------------------------------------------------------- */
+
+  .shots { display: grid; gap: 2.5rem; margin-top: 2rem; }
+  figure { margin: 0; }
+  figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+  figcaption { margin-top: 0.8rem; color: var(--txt2); font-size: 0.92rem; max-width: 68ch; }
+  figcaption b { color: var(--txt); font-weight: 600; }
+
+  /* ---- features ------------------------------------------------------ */
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.4rem;
+  }
+  .card h3 { margin: 0 0 0.4rem; font-size: 1rem; font-weight: 600; }
+  .card p { margin: 0; color: var(--txt2); font-size: 0.92rem; }
+
+  /* ---- footer -------------------------------------------------------- */
+
+  footer {
+    padding: 3rem 0 4rem;
+    color: var(--txt3);
+    font-size: 0.88rem;
+  }
+  footer p { max-width: 70ch; }
+  footer a { color: var(--txt2); }
+
+  @media (max-width: 640px) {
+    .hero { padding: 3.5rem 0 2.5rem; }
+    section { padding: 3rem 0; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="mark" aria-hidden="true">鏡</div>
+    <h1>Kagami</h1>
+    <p class="tagline">A manga reader for Windows, built on Mihon's extension ecosystem.</p>
+
+    <a class="cta" href="https://github.com/ItsMeYoshiro/kagami-manga-reader-desktop/releases/latest">
+      Download for Windows
+    </a>
+    <p class="meta">
+      Windows 10/11 · 64-bit · ~318 MB ·
+      <a href="https://github.com/ItsMeYoshiro/kagami-manga-reader-desktop">source on GitHub</a>
+    </p>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>One installer, no Java to set up</h2>
+    <p class="lede">
+      Mihon's sources are Android apps. Getting them to run on a desktop normally
+      means installing a JVM, fetching a server, and wiring the two together.
+      Kagami ships all of that inside a single <code>.exe</code>.
+    </p>
+
+    <div class="flow">
+      <div class="step">
+        <h3>Install and open</h3>
+        <p>No Java, no server to configure, nothing to keep running in a terminal.</p>
+      </div>
+      <div class="step">
+        <h3>Pick your sources</h3>
+        <p>The extension repository is already registered — open Extensions and install what you read.</p>
+      </div>
+      <div class="step">
+        <h3>Read</h3>
+        <p>Search across sources, follow titles, download chapters for offline reading.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Before you install</h2>
+    <div class="notice">
+      <h3>Windows will warn you, and that is expected</h3>
+      <p>
+        The installer is <b>not signed</b>, so SmartScreen shows
+        <i>"Windows protected your PC"</i>. Click <b>More info</b>, then
+        <b>Run anyway</b>. Code signing needs a certificate that costs a few
+        hundred dollars a year and has no free tier, so the warning is
+        unavoidable for any independent build.
+      </p>
+      <p>
+        What is within reach is <b>provenance</b>. Every release is built on
+        GitHub's runners from the tagged commit and carries a signed statement
+        of where it came from. You can check the file before running it, against
+        GitHub rather than against a promise made here:
+      </p>
+      <pre>gh attestation verify Kagami-0.1.1-x64.exe \
+  --repo ItsMeYoshiro/kagami-manga-reader-desktop</pre>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>How it works</h2>
+    <p class="lede">
+      Mihon's extensions are Android apps — DEX bytecode, compiled against the
+      Android APIs. They cannot run on a desktop as they are.
+    </p>
+    <p>
+      <a href="https://github.com/Suwayomi/Suwayomi-Server">Suwayomi-Server</a>
+      converts them to JVM bytecode and runs them against a compatibility layer
+      that emulates <code>android.*</code>, which is what lets Mihon's own
+      sources work off Android.
+    </p>
+    <p>
+      Kagami is the client around that: an Electron interface that starts and
+      supervises the server as a child process and talks to it over GraphQL. The
+      JVM is bundled, started on launch and shut down with the app — you never
+      have to know it is there.
+    </p>
+    <pre>Electron (main)          Electron (renderer)
+├─ spawns the JVM   ◄──► ├─ React + TanStack Query
+├─ health check     IPC  ├─ GraphQL / graphql-ws
+└─ lifecycle             └─ &lt;img&gt; straight at the server
+        │
+        ▼ spawn
+Suwayomi-Server (bundled JRE) → Mihon .apk extensions</pre>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>What it looks like</h2>
+    <p class="lede">Screenshots from the current release.</p>
+
+    <div class="shots">
+      <figure>
+        <img src="shots/extensions.png" alt="The Extensions screen, listing installed sources with their language and version, and tabs for installed, updates and available extensions." loading="lazy" width="1920" height="1080">
+        <figcaption>
+          <b>Extensions.</b> The repository is registered for you — there is no URL
+          to paste. An extension can carry many sources: MangaDex alone exposes
+          61, one per language, and expands in place instead of navigating away.
+        </figcaption>
+      </figure>
+
+      <figure>
+        <img src="shots/browse.jpg" alt="The Browse screen showing rows of manga covers grouped by source." loading="lazy" width="1920" height="1080">
+        <figcaption>
+          <b>Browse.</b> Search every source in a language at once, or leave the
+          box empty for what is popular. A source that fails says so and the rest
+          keep going.
+        </figcaption>
+      </figure>
+
+      <figure>
+        <img src="shots/detail.jpg" alt="A title's page showing its cover, description, genres and chapter list with per-chapter download buttons." loading="lazy" width="1920" height="1080">
+        <figcaption>
+          <b>A title.</b> Chapters in real reading order, with read state, download
+          buttons and where you stopped. Reading progress is written as you turn
+          pages and flushed when you leave, so closing mid-chapter loses nothing.
+        </figcaption>
+      </figure>
+
+      <figure>
+        <img src="shots/reader.jpg" alt="The reader in continuous mode, fitted to width, showing page 19 of 50." loading="lazy" width="1920" height="1080">
+        <figcaption>
+          <b>The reader.</b> Paged in either direction, or continuous. Long-strip
+          chapters — webtoon, manhwa — are detected and read continuously, fitted
+          to width: fitting a 940×2516 strip to the window height would paint it
+          325&nbsp;px wide, at a third of its own resolution.
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Also in there</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Library and updates</h3>
+        <p>Per-title unread counts, filters, and a batch update that tells you what it found.</p>
+      </div>
+      <div class="card">
+        <h3>Downloads</h3>
+        <p>A queue you can watch, with progress arriving live rather than on a timer.</p>
+      </div>
+      <div class="card">
+        <h3>English and Portuguese</h3>
+        <p>Switchable in the app. Dates, language names and sorting follow it too, not just the labels.</p>
+      </div>
+      <div class="card">
+        <h3>Nothing phones home</h3>
+        <p>The bundled server binds to <code>127.0.0.1</code>. There is no account and no telemetry.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Contributing</h2>
+    <p class="lede">
+      The source is on GitHub. It runs from a clone with Node.js 20+ and the
+      Suwayomi bundle next to it.
+    </p>
+    <pre>git clone https://github.com/ItsMeYoshiro/kagami-manga-reader-desktop.git
+cd kagami-manga-reader-desktop
+npm install
+npm run dev</pre>
+    <p style="margin-top:1.4rem">
+      <a href="https://github.com/ItsMeYoshiro/kagami-manga-reader-desktop#running-it-locally">Full setup</a> ·
+      <a href="https://github.com/ItsMeYoshiro/kagami-manga-reader-desktop/blob/main/DESIGN.md">Design notes</a> ·
+      <a href="https://github.com/ItsMeYoshiro/kagami-manga-reader-desktop/blob/main/src/renderer/src/lib/i18n/README.md">Add a language</a>
+    </p>
+    <p>
+      Adding a language is one new file and one line, and a missing translation
+      fails the type check rather than shipping as the wrong language.
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>
+      Kagami is MPL-2.0.
+      <a href="https://github.com/mihonapp/mihon">Mihon</a> is Apache-2.0 and
+      <a href="https://github.com/Suwayomi/Suwayomi-Server">Suwayomi-Server</a>
+      is MPL-2.0 — both independent projects, consumed here, neither affiliated
+      with this one. "Mihon" and its logo belong to the Mihon project.
+    </p>
+    <p>
+      Kagami hosts no manga and ships no content. It reads from whatever sources
+      you choose to install, and what those sources serve is between you and
+      them. The artwork in the screenshots belongs to its respective creators
+      and publishers, and appears only to show the interface.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
