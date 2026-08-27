@@ -2,6 +2,18 @@
 
 A manga reader for Windows, built on Mihon's extension ecosystem.
 
+## Download
+
+**[Get the installer](https://github.com/ItsMeYoshiro/kagami-manga-reader-desktop/releases/latest)**
+— Windows 10/11, 64-bit. Nothing else to install: the JVM the sources need is
+bundled inside.
+
+The installer is **not signed**, so SmartScreen will show *"Windows protected
+your PC"* the first time. Click **More info** then **Run anyway**. Signing needs
+a certificate that costs a few hundred dollars a year, and no free tier exists;
+until then the warning is unavoidable for any independent build. Everything in
+that file is built from this repository — `npm run dist` reproduces it.
+
 ## How it works
 
 Mihon's extensions are Android APKs (DEX bytecode).
