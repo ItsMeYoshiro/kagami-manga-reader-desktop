@@ -4,7 +4,7 @@ import { useQueries, useQuery } from '@tanstack/react-query'
 import { request } from '@/lib/gql/client'
 import { limitSearch } from '@/lib/concurrency'
 import { compareText, languageName } from '@/lib/intl'
-import { useT } from '@/lib/i18n'
+import { useLanguage } from '@/lib/i18n'
 import { SourceRow, PER_SOURCE } from '@/components/SourceRow'
 import { Button, EmptyState, ScreenTitle, SearchField, Select, TopBar } from '@/components/ui'
 import type { MangaCard } from '@/components/MangaGrid'
@@ -38,7 +38,7 @@ export function Browse(): React.ReactNode {
   // back must not throw away what the user searched for.
   const [params, setParams] = useSearchParams()
   const navigate = useNavigate()
-  const t = useT()
+  const { t, language } = useLanguage()
   const query = params.get('q') ?? ''
   const languageParam = params.get('lang') ?? ''
   const [term, setTerm] = useState(query)
@@ -67,7 +67,8 @@ export function Browse(): React.ReactNode {
       .map(([code, n]) => ({ code, n, name: languageName(code) }))
       // Most sources first: those are the languages where global search pays off.
       .sort((a, b) => b.n - a.n || compareText(a.name, b.name))
-  }, [remote])
+    // `language` matters: both the names and their order come from it.
+  }, [remote, language])
 
   const known = languages.some((l) => l.code === wanted)
   const activeLanguage = (known ? wanted : '') || languages[0]?.code || ''

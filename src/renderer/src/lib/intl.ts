@@ -1,4 +1,4 @@
-import { locale } from '@/lib/i18n'
+import { locale, t } from '@/lib/i18n'
 
 /**
  * Readable language names from the codes that sources use.
@@ -27,6 +27,10 @@ function displayNames(): Intl.DisplayNames | null {
 
 /** "pt-BR" -> "Portuguese (Brazil)". Falls back to the code itself. */
 export function languageName(code: string): string {
+  // Suwayomi's own convention for a source that is not tied to one language.
+  // It is not a BCP 47 tag, so Intl returns it unchanged -- the reader would
+  // see a bare "all" in a list of proper language names.
+  if (code === 'all') return t('lang.multi')
   try {
     return displayNames()?.of(code) ?? code
   } catch {

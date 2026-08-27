@@ -194,6 +194,7 @@ export const en: Dictionary = {
   'reader.mode.continuous': 'Continuous ↓',
   'reader.fit.width': 'Width',
   'reader.fit.height': 'Height',
+  'lang.multi': 'Multi-language',
   'reader.fit.original': 'Original',
   'reader.autoLongStrip':
     'Long-strip chapter detected: continuous, fitted to width. Changing this takes over.',

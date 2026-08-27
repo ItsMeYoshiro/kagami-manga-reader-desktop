@@ -49,6 +49,21 @@ body,
   height: 100%;
 }
 
+/* Chromium draws scrollbars and form controls itself and defaults them to a
+   light palette; this is the switch that tells it the page is dark. */
+:root {
+  color-scheme: dark;
+}
+
+/* The <select> popup does not follow that switch on Windows -- it is painted
+   through a native path, on white, while the options inherit the page's light
+   text. Everything except the highlighted row disappears. The popup itself
+   cannot be styled, but the options inside it can, and those Chromium honours. */
+option {
+  background-color: var(--color-raised);
+  color: var(--color-txt);
+}
+
 body {
   margin: 0;
   background: var(--color-bg);

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { request } from '@/lib/gql/client'
 import { compareText, languageName } from '@/lib/intl'
-import { useT } from '@/lib/i18n'
+import { useLanguage } from '@/lib/i18n'
 import { useRepository } from '@/lib/extensions/RepositoryProvider'
 import { ExtensionRow, type ExtensionAction, type Source } from '@/components/ExtensionRow'
 import {
@@ -45,10 +45,13 @@ export function Extensions(): React.ReactNode {
   const qc = useQueryClient()
   const navigate = useNavigate()
   const repository = useRepository()
-  const t = useT()
+  const { t, language: uiLanguage } = useLanguage()
   const [tab, setTab] = useState<Tab>('installed')
   const [search, setSearch] = useState('')
-  const [language, setLanguage] = useState('all')
+  // Empty, not 'all': "all" is a real language code in Suwayomi -- 126 of the
+  // 1377 extensions use it, MangaDex among them -- so a sentinel of that name
+  // would shadow them and make them impossible to filter for.
+  const [language, setLanguage] = useState('')
 
   const list = useQuery({
     queryKey: ['extensions'],
@@ -74,7 +77,8 @@ export function Extensions(): React.ReactNode {
       group.sort((a, b) => compareText(languageName(a.lang), languageName(b.lang)))
     }
     return byPkg
-  }, [sources.data])
+    // `language` matters: the group order comes from the translated names.
+  }, [sources.data, uiLanguage])
 
   const sync = useMutation({
     mutationFn: () => request<FetchExtensionsMutation>(FETCH_EXTENSIONS_MUTATION),
@@ -123,7 +127,15 @@ export function Extensions(): React.ReactNode {
 
   const all = list.data?.extensions.nodes ?? []
 
-  const languages = useMemo(() => [...new Set(all.map((e) => e.lang))].sort(), [all])
+  // Sources identify a language by code; the filter shows the name, ordered
+  // the way the reader's own language orders words.
+  const languages = useMemo(
+    () =>
+      [...new Set(all.map((e) => e.lang))]
+        .map((code) => ({ code, name: languageName(code) }))
+        .sort((a, b) => compareText(a.name, b.name)),
+    [all, uiLanguage],
+  )
 
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase()
@@ -131,7 +143,7 @@ export function Extensions(): React.ReactNode {
       .filter((e) => {
         if (tab === 'installed' && !e.isInstalled) return false
         if (tab === 'updates' && !e.hasUpdate) return false
-        if (language !== 'all' && e.lang !== language) return false
+        if (language !== '' && e.lang !== language) return false
         if (term && !e.name.toLowerCase().includes(term)) return false
         return true
       })
@@ -168,10 +180,10 @@ export function Extensions(): React.ReactNode {
         />
 
         <Select value={language} onChange={(e) => setLanguage(e.target.value)}>
-          <option value="all">{t('ext.allLanguages')}</option>
+          <option value="">{t('ext.allLanguages')}</option>
           {languages.map((l) => (
-            <option key={l} value={l}>
-              {l}
+            <option key={l.code} value={l.code}>
+              {l.name}
             </option>
           ))}
         </Select>

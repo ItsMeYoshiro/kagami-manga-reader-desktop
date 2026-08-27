@@ -194,6 +194,7 @@ export const ptBR = {
   'reader.mode.continuous': 'Contínuo ↓',
   'reader.fit.width': 'Largura',
   'reader.fit.height': 'Altura',
+  'lang.multi': 'Multi-idioma',
   'reader.fit.original': 'Original',
   'reader.autoLongStrip':
     'Capítulo em tira longa detectado: contínuo, ajustado pela largura. Trocar aqui assume o controle.',
