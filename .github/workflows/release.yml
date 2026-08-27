@@ -64,7 +64,12 @@ jobs:
 
       - run: npm ci
 
-      - run: npm run dist
+      # electron-builder starts publishing on its own as soon as it detects CI,
+      # and then fails asking for a GH_TOKEN. Packaging and releasing are
+      # separate steps here: the installer is attached below, once attested.
+      # `never` is a CLI policy, not a config key -- it has no meaning inside
+      # electron-builder.yml, where `publish` names a provider.
+      - run: npm run dist -- --publish never
 
       - name: Attest the installer
         uses: actions/attest-build-provenance@v2

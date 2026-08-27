@@ -4,11 +4,6 @@ directories:
   buildResources: build
   output: dist
 
-# electron-builder starts publishing on its own as soon as it detects CI, and
-# then fails asking for a GH_TOKEN. Packaging and releasing are separate steps
-# here: the workflow attaches the installer itself, after attesting it.
-publish: never
-
 files:
   - out/**
   - '!**/{.vscode,.idea,.git}'
