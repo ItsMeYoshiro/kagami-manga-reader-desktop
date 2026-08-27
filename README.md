@@ -13,6 +13,8 @@ GraphQL. You install one `.exe` and never have to know there is a JVM inside.
 
 **[Get the installer](https://github.com/ItsMeYoshiro/kagami-manga-reader-desktop/releases/latest)**
 — Windows 10/11, 64-bit. Nothing else to install.
+Screenshots and the short version are on the
+[project page](https://itsmeyoshiro.github.io/kagami-manga-reader-desktop/).
 
 The installer is **not signed**, so SmartScreen will show *"Windows protected
 your PC"* the first time. Click **More info** then **Run anyway**. Signing needs
