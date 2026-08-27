@@ -341,6 +341,23 @@ Three modes, persisted per machine in `localStorage`:
 
 Fit modes: width, height, original.
 
+### Long-strip detection
+
+The stored preference is not always the right one. Webtoons are published as
+tall strips instead of pages, and fitting a strip to the window height collapses
+it: a 940x2516 strip in a 1266x779 window is painted **325 px wide, at 0.35x its
+own resolution**, with black bars over four fifths of the screen. The same
+defaults on a page-shaped scan are fine (0.72x, filling 35% of the width).
+
+So the reader measures the first pages of a chapter and, above a 2:1 ratio,
+reads it as continuous fitted to width — 1.25x, filling 74%. A page-shaped scan
+sits near 1.4:1 and rarely passes 1.6:1, and a double-page spread is *wider*
+than tall, so it cannot trip the check.
+
+The guess never overwrites what is in `localStorage`, and it steps aside the
+moment the reader touches either control, for as long as that title is open.
+Opening a different title lets it decide again.
+
 The width fit adds a third control, **maximum width**: never upscale (default),
 800/1000/1200/1400 px, or full width. Manhwa is published at a fixed width
 (TBATE, for instance, ships at 940 px); stretching past that only blurs the art.

@@ -195,6 +195,8 @@ export const ptBR = {
   'reader.fit.width': 'Largura',
   'reader.fit.height': 'Altura',
   'reader.fit.original': 'Original',
+  'reader.autoLongStrip':
+    'Capítulo em tira longa detectado: contínuo, ajustado pela largura. Trocar aqui assume o controle.',
   'reader.maxWidth.natural': 'Sem ampliar',
   'reader.maxWidth.800': 'Max 800px',
   'reader.maxWidth.1000': 'Max 1000px',

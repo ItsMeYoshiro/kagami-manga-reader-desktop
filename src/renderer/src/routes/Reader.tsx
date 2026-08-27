@@ -4,6 +4,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { assetUrl, request } from '@/lib/gql/client'
 import { usePreload } from '@/lib/reader/usePreload'
 import { useReadingProgress } from '@/lib/reader/useReadingProgress'
+import { useLongStrip } from '@/lib/reader/useLongStrip'
 import {
   FIT_KEY,
   FITS,
@@ -15,6 +16,7 @@ import {
   useReaderSettings,
   type FitMode,
   type MaxWidth,
+  type ReaderSettings,
   type ReadingMode,
 } from '@/lib/reader/settings'
 import { PagedView } from '@/components/reader/PagedView'
@@ -83,6 +85,31 @@ export function Reader(): React.ReactNode {
   usePreload(pages, index)
   useReadingProgress(Number(mangaId), id, index, pages.length)
 
+  // --- Long-strip chapters -------------------------------------------------
+
+  // Webtoons want the opposite defaults from paged manga, and the reader can
+  // tell them apart on its own. The guess only stands until the reader
+  // disagrees: touching either select hands control back for as long as this
+  // title is open.
+  const longStrip = useLongStrip(pages)
+  const [overridden, setOverridden] = useState(false)
+  useEffect(() => {
+    setOverridden(false)
+  }, [mangaId])
+
+  const auto = longStrip === true && !overridden
+  const view: ReaderSettings = auto
+    ? { ...settings, mode: 'continuous', fit: 'width' }
+    : settings
+
+  const override = useCallback(
+    (patch: Partial<ReaderSettings>) => {
+      setOverridden(true)
+      setSettings(patch)
+    },
+    [setSettings],
+  )
+
   // --- Navigation ----------------------------------------------------------
 
   // sourceOrder is the real reading order: chapterNumber jumps (62 -> 1183)
@@ -128,7 +155,7 @@ export function Reader(): React.ReactNode {
       const target = e.target as HTMLElement | null
       if (target && ['SELECT', 'INPUT', 'TEXTAREA'].includes(target.tagName)) return
 
-      const rtl = settings.mode === 'paged-rtl'
+      const rtl = view.mode === 'paged-rtl'
       switch (e.key) {
         case 'ArrowRight':
           if (rtl) prevPage()
@@ -140,11 +167,11 @@ export function Reader(): React.ReactNode {
           break
         case 'ArrowDown':
         case 'PageDown':
-          if (isPaged(settings.mode)) nextPage()
+          if (isPaged(view.mode)) nextPage()
           break
         case 'ArrowUp':
         case 'PageUp':
-          if (isPaged(settings.mode)) prevPage()
+          if (isPaged(view.mode)) prevPage()
           break
         case ' ':
           e.preventDefault()
@@ -157,7 +184,7 @@ export function Reader(): React.ReactNode {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [settings.mode, nextPage, prevPage, navigate, mangaId])
+  }, [view.mode, nextPage, prevPage, navigate, mangaId])
 
   // --- Render --------------------------------------------------------------
 
@@ -187,8 +214,9 @@ export function Reader(): React.ReactNode {
         </span>
 
         <select
-          value={settings.mode}
-          onChange={(e) => setSettings({ mode: e.target.value as ReadingMode })}
+          value={view.mode}
+          onChange={(e) => override({ mode: e.target.value as ReadingMode })}
+          title={auto ? t('reader.autoLongStrip') : undefined}
           className={CONTROL}
         >
           {MODES.map((m) => (
@@ -199,8 +227,9 @@ export function Reader(): React.ReactNode {
         </select>
 
         <select
-          value={settings.fit}
-          onChange={(e) => setSettings({ fit: e.target.value as FitMode })}
+          value={view.fit}
+          onChange={(e) => override({ fit: e.target.value as FitMode })}
+          title={auto ? t('reader.autoLongStrip') : undefined}
           className={CONTROL}
         >
           {FITS.map((f) => (
@@ -210,10 +239,10 @@ export function Reader(): React.ReactNode {
           ))}
         </select>
 
-        {settings.fit === 'width' ? (
+        {view.fit === 'width' ? (
           <select
-            value={settings.maxWidth}
-            onChange={(e) => setSettings({ maxWidth: e.target.value as MaxWidth })}
+            value={view.maxWidth}
+            onChange={(e) => override({ maxWidth: e.target.value as MaxWidth })}
             className={CONTROL}
           >
             {MAX_WIDTHS.map((w) => (
@@ -237,13 +266,13 @@ export function Reader(): React.ReactNode {
       </header>
 
       <div className="min-h-0 flex-1">
-        {isPaged(settings.mode) ? (
+        {isPaged(view.mode) ? (
           <PagedView
             pages={pages}
             index={index}
-            mode={settings.mode}
-            fit={settings.fit}
-            maxWidth={settings.maxWidth}
+            mode={view.mode}
+            fit={view.fit}
+            maxWidth={view.maxWidth}
             onPrev={prevPage}
             onNext={nextPage}
           />
@@ -251,8 +280,8 @@ export function Reader(): React.ReactNode {
           <ContinuousView
             pages={pages}
             index={index}
-            fit={settings.fit}
-            maxWidth={settings.maxWidth}
+            fit={view.fit}
+            maxWidth={view.maxWidth}
             onIndexChange={setIndex}
           />
         )}

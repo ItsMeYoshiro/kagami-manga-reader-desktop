@@ -195,6 +195,8 @@ export const en: Dictionary = {
   'reader.fit.width': 'Width',
   'reader.fit.height': 'Height',
   'reader.fit.original': 'Original',
+  'reader.autoLongStrip':
+    'Long-strip chapter detected: continuous, fitted to width. Changing this takes over.',
   'reader.maxWidth.natural': 'Never upscale',
   'reader.maxWidth.800': 'Max 800px',
   'reader.maxWidth.1000': 'Max 1000px',
