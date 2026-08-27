@@ -1,0 +1,48 @@
+{
+  "name": "kagami",
+  "version": "0.1.0",
+  "description": "A desktop manga reader built on Mihon's extension ecosystem",
+  "main": "./out/main/index.js",
+  "author": "Kaio Barbosa",
+  "license": "MPL-2.0",
+  "private": true,
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json && electron-vite build",
+    "start": "electron-vite preview",
+    "pack": "npm run build && electron-builder --dir",
+    "dist": "npm run build && electron-builder --win",
+    "codegen": "graphql-codegen --config codegen.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
+    "validate-gql": "node scripts-validate.mjs",
+    "check-i18n": "node scripts-i18n.mjs",
+    "check": "npm run typecheck && npm run validate-gql && npm run check-i18n"
+  },
+  "dependencies": {
+    "@fontsource/ibm-plex-sans": "^5.3.0",
+    "@fontsource/zen-kaku-gothic-new": "^5.3.0",
+    "@tanstack/react-query": "^5.102.0",
+    "graphql": "^16.11.0",
+    "graphql-request": "^7.2.0",
+    "graphql-ws": "^6.0.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.9.0"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^6.0.0",
+    "@graphql-codegen/typescript": "^5.0.0",
+    "@graphql-codegen/typescript-operations": "^5.0.0",
+    "@tailwindcss/vite": "^4.3.0",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.2.0",
+    "electron": "^44.0.0",
+    "electron-builder": "^26.15.0",
+    "electron-vite": "^5.0.0",
+    "tailwindcss": "^4.3.0",
+    "typescript": "^5.9.0",
+    "vite": "^7.1.0"
+  }
+}

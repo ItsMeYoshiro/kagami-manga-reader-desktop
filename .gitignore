@@ -1,0 +1,8 @@
+node_modules/
+out/
+dist/
+.vite/
+resources/server/
+*.local
+.env
+*.tsbuildinfo

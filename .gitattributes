@@ -1,0 +1,5 @@
+# LF in the repository, native line endings in the working copy. Without this,
+# a contributor on Windows and one on Linux produce diffs on every line.
+* text=auto
+
+*.ico binary
