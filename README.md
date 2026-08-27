@@ -11,8 +11,23 @@ bundled inside.
 The installer is **not signed**, so SmartScreen will show *"Windows protected
 your PC"* the first time. Click **More info** then **Run anyway**. Signing needs
 a certificate that costs a few hundred dollars a year, and no free tier exists;
-until then the warning is unavoidable for any independent build. Everything in
-that file is built from this repository — `npm run dist` reproduces it.
+until then the warning is unavoidable for any independent build.
+
+### Checking what you downloaded
+
+Signing is out of reach, but provenance is not. Every release is built by
+[the release workflow](.github/workflows/release.yml) on GitHub's runners and
+carries a signed statement of where it came from:
+
+```bash
+gh attestation verify Kagami-0.1.0-x64.exe \
+  --repo ItsMeYoshiro/kagami-manga-reader-desktop
+```
+
+That answers a different question from a signature. A signature says Windows
+trusts the publisher; this says the file you hold is exactly what this
+repository, at a named commit, builds into — and you check it against GitHub
+rather than against a promise made here.
 
 ## How it works
 
@@ -410,8 +425,21 @@ npm run dist       # builds dist/Kagami-<version>-x64.exe (NSIS)
 the Electron build and the launchers the bundle ships that we do not use.
 
 The installer is **not signed**. Windows SmartScreen will warn about it, and
-browsers will flag the download — see the note in the release instructions if
-you distribute it.
+browsers will flag the download — see [Download](#download) for what to tell
+people about that.
+
+### Releasing
+
+`.github/workflows/release.yml` runs the same `npm run dist` on a Windows
+runner, fetching the server bundle the way the requirements above describe, and
+records a provenance attestation for the installer before attaching it to the
+release. Trigger it by pushing a `v*` tag, or from the Actions tab against an
+existing tag.
+
+Two things that are easy to get wrong there, both already handled: the `tar` on
+PATH in Git Bash is GNU tar and cannot read a zip (Windows ships bsdtar as
+`tar.exe`, which can), and electron-builder starts publishing on its own the
+moment it detects CI unless it is passed `--publish never`.
 
 ### Icon
 
