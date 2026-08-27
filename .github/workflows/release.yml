@@ -34,7 +34,12 @@ jobs:
     runs-on: windows-latest
 
     steps:
+      # Build the tag, not the branch. Dispatched by hand, checkout defaults to
+      # the branch it was launched from, and the installer would then be
+      # attested to a commit the tag does not point at.
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
 
       - uses: actions/setup-node@v4
         with:
@@ -82,4 +87,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           tag="${{ inputs.tag || github.ref_name }}"
+          # Pushing a tag is enough on its own: if no release exists for it yet,
+          # open one here rather than failing after a ten-minute build.
+          gh release view "$tag" >/dev/null 2>&1 ||
+            gh release create "$tag" --title "Kagami ${tag#v}" --generate-notes
           gh release upload "$tag" dist/Kagami-*-x64.exe --clobber
