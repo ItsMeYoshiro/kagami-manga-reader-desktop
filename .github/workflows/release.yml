@@ -44,17 +44,22 @@ jobs:
       # The server bundle is a ~500 MB release artifact, so it is not in the
       # repository. Both paths.ts and electron-builder look for it next to the
       # checkout -- the same layout the README asks contributors for.
+      # pwsh, not bash: the `tar` on PATH in Git Bash is GNU tar, which cannot
+      # read a zip. Windows ships bsdtar as tar.exe, and that one can.
       - name: Fetch Suwayomi-Server
-        shell: bash
+        shell: pwsh
         run: |
-          name="Suwayomi-Server-${SUWAYOMI}-windows-x64"
-          curl -fL --retry 3 -o server.zip \
-            "https://github.com/Suwayomi/Suwayomi-Server/releases/download/${SUWAYOMI}/${name}.zip"
-          mkdir -p ../server
-          tar -xf server.zip -C ../server
-          rm server.zip
-          test -f "../server/${name}/bin/Suwayomi-Server.jar" || {
-            echo "the bundle did not unpack where the build expects it"; ls -R ../server | head -40; exit 1
+          $ver = $env:SUWAYOMI
+          $name = "Suwayomi-Server-${ver}-windows-x64"
+          curl.exe -fL --retry 3 -o server.zip `
+            "https://github.com/Suwayomi/Suwayomi-Server/releases/download/${ver}/${name}.zip"
+          New-Item -ItemType Directory -Force ../server | Out-Null
+          tar.exe -xf server.zip -C ../server
+          if ($LASTEXITCODE -ne 0) { throw "could not unpack the bundle" }
+          Remove-Item server.zip
+          if (-not (Test-Path "../server/${name}/bin/Suwayomi-Server.jar")) {
+            Get-ChildItem -Recurse ../server | Select-Object -First 20 FullName
+            throw "the bundle did not unpack where the build expects it"
           }
 
       - run: npm ci
