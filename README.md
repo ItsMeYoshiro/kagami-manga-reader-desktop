@@ -26,7 +26,7 @@ What *is* within reach is provenance. Every release is built by
 carries a signed statement of where it came from:
 
 ```bash
-gh attestation verify Kagami-0.1.1-x64.exe \
+gh attestation verify Kagami-0.1.2-x64.exe \
   --repo ItsMeYoshiro/kagami-manga-reader-desktop
 ```
 
