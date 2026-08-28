@@ -195,6 +195,10 @@ export const ptBR = {
   'reader.fit.width': 'Largura',
   'reader.fit.height': 'Altura',
   'lang.multi': 'Multi-idioma',
+  'nav.settings': 'Preferências',
+  'settings.checkUpdates': 'Avisar sobre novas versões',
+  'settings.checkUpdatesHint':
+    'Pergunta ao GitHub, uma vez por abertura, qual é a versão mais recente. É a única requisição que o Kagami faz fora do próprio servidor.',
   'update.title': 'Nova versão disponível',
   'update.body': 'Kagami {latest} foi publicado. Você está na {current}.',
   'update.action': 'Ver novidades',

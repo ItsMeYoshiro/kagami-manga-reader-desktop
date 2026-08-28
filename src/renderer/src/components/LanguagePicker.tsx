@@ -14,7 +14,7 @@ export function LanguagePicker(): React.ReactNode {
   const [open, setOpen] = useState(false)
 
   return (
-    <div className="relative mt-auto flex flex-col items-center">
+    <div className="relative flex flex-col items-center">
       <button
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="menu"

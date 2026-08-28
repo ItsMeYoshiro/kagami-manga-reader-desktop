@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { platform } from '@/platform'
+import { usePreferences } from '@/lib/preferences'
 import { Button } from '@/components/ui'
 import { useT } from '@/lib/i18n'
 
@@ -26,11 +27,15 @@ const readDismissed = (): string | null => {
  */
 export function UpdateNotice(): React.ReactNode {
   const t = useT()
+  const prefs = usePreferences()
   const [dismissed, setDismissed] = useState(readDismissed)
 
   const check = useQuery({
     queryKey: ['update-check'],
     queryFn: () => platform.checkForUpdate(),
+    // Off means off: with the switch down no request is made at all, rather
+    // than one being made and its answer hidden.
+    enabled: prefs.checkForUpdates,
     // Once per launch. A release is not going to land mid-session, and the
     // GitHub API counts requests per address.
     staleTime: Infinity,
@@ -39,6 +44,9 @@ export function UpdateNotice(): React.ReactNode {
   })
 
   const info = check.data
+  // `enabled: false` stops new requests but keeps whatever was already
+  // fetched, so the switch has to gate the render too.
+  if (!prefs.checkForUpdates) return null
   if (!info?.available || !info.latest || info.latest === dismissed) return null
   const latest = info.latest
 

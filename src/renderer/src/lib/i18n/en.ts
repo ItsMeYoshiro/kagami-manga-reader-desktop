@@ -195,6 +195,10 @@ export const en: Dictionary = {
   'reader.fit.width': 'Width',
   'reader.fit.height': 'Height',
   'lang.multi': 'Multi-language',
+  'nav.settings': 'Preferences',
+  'settings.checkUpdates': 'Tell me about new versions',
+  'settings.checkUpdatesHint':
+    'Asks GitHub once per launch what the newest release is. It is the only request Kagami makes outside its own server.',
   'update.title': 'A new version is available',
   'update.body': 'Kagami {latest} is out. You are on {current}.',
   'update.action': 'See what changed',

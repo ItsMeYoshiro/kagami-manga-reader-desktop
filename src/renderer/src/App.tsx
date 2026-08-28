@@ -13,6 +13,7 @@ import { LibraryUpdateProvider } from '@/lib/library/LibraryUpdateProvider'
 import { RepositoryProvider } from '@/lib/extensions/RepositoryProvider'
 import { LanguageProvider, useT, type Key } from '@/lib/i18n'
 import { LanguagePicker } from '@/components/LanguagePicker'
+import { SettingsMenu } from '@/components/SettingsMenu'
 import { UpdateNotice } from '@/components/UpdateNotice'
 import { request } from '@/lib/gql/client'
 import { LIBRARY_QUERY } from '@/lib/gql/operations/library'
@@ -109,7 +110,12 @@ function Shell(): React.ReactNode {
           <RailItem key={d.to} destination={d} badge={badgeFor(d.to)} />
         ))}
 
-        <LanguagePicker />
+        {/* One group at the foot of the rail: choices about the app, as
+            opposed to the destinations above them. */}
+        <div className="mt-auto flex flex-col items-center">
+          <SettingsMenu />
+          <LanguagePicker />
+        </div>
       </nav>
 
       <main className="min-w-0 flex-1">

@@ -64,6 +64,17 @@ export function LanguageIcon({ className }: Props): React.ReactNode {
   )
 }
 
+/** Sliders rather than a cog: these are choices, not machinery. */
+export function SettingsIcon({ className }: Props): React.ReactNode {
+  return (
+    <svg {...base} className={className} width="22" height="22" aria-hidden="true">
+      <path d="M4 7h9M17 7h3M4 17h3M11 17h9" />
+      <circle cx="15" cy="7" r="2.2" />
+      <circle cx="9" cy="17" r="2.2" />
+    </svg>
+  )
+}
+
 export function BackIcon({ className }: Props): React.ReactNode {
   return (
     <svg {...base} className={className} width="20" height="20" aria-hidden="true">

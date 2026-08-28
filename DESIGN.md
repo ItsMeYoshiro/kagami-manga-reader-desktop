@@ -325,9 +325,20 @@ build id, nothing about the library. It is worth stating plainly, because an
 app that reads from the internet on your behalf should be clear about the one
 time it talks about itself.
 
+It can be switched off, in the preferences at the foot of the navigation rail,
+and off means off: the check is a query the renderer starts, so with the switch
+down nothing is requested at all rather than a request being made and its answer
+hidden. The switch carries the description of what the request is, next to it —
+turning it off should be a decision, not a guess.
+
 It lives in the main process for two reasons that each settle it on their own:
 the renderer's CSP allows connections only to `127.0.0.1:4567`, and the version
 of the running build is something only Electron knows.
+
+The preference is a small store rather than a context. The two components that
+care sit at opposite ends of the tree — the switch in the rail, the reader of it
+in a floating notice — and a provider around the whole app for one boolean is
+more machinery than the problem deserves.
 
 Deliberately not an auto-updater. The installer is 318 MB and unsigned;
 downloading that in the background and swapping the app out is the wrong amount
