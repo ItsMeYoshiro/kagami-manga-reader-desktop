@@ -1,4 +1,4 @@
-import type { ServerStatus } from '@shared/types'
+import type { ServerStatus, UpdateInfo } from '@shared/types'
 
 /**
  * The platform boundary.
@@ -11,6 +11,8 @@ export interface Platform {
   getServerStatus(): Promise<ServerStatus>
   restartServer(): Promise<void>
   onServerStatusChanged(cb: (status: ServerStatus) => void): () => void
+  /** Asks whether a newer release exists. Never throws; says so instead. */
+  checkForUpdate(): Promise<UpdateInfo>
   /** true inside Electron; false in a plain browser. */
   readonly isDesktop: boolean
 }
@@ -19,6 +21,7 @@ const electron: Platform = {
   getServerStatus: () => window.kagami.server.getStatus(),
   restartServer: () => window.kagami.server.restart(),
   onServerStatusChanged: (cb) => window.kagami.server.onStatusChanged(cb),
+  checkForUpdate: () => window.kagami.update.check(),
   isDesktop: true,
 }
 
@@ -31,6 +34,8 @@ const browser: Platform = {
   getServerStatus: async () => ({ phase: 'external', baseUrl: 'http://127.0.0.1:4567' }),
   restartServer: async () => {},
   onServerStatusChanged: () => () => {},
+  // In a browser there is no installed build to be out of date.
+  checkForUpdate: async () => ({ current: '0.0.0', available: false }),
   isDesktop: false,
 }
 

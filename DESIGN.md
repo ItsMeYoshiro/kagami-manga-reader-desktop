@@ -311,6 +311,33 @@ Neighbouring pages (3 ahead, 1 behind) are preloaded with `new Image()`. The
 images are not retained in memory: the point is only to warm Chromium's cache so
 the page turn is instant.
 
+## Update notice
+
+Once per launch, the main process asks GitHub for the newest release and
+compares it with `app.getVersion()`. If it is newer, a dismissible card
+appears in the corner with a link to the release. Dismissal is remembered
+against that version number, so the next release speaks up again but the same
+one does not nag.
+
+**This is the only request Kagami makes to anywhere other than its own server**,
+and it is a plain unauthenticated GET to a public endpoint: no identifier, no
+build id, nothing about the library. It is worth stating plainly, because an
+app that reads from the internet on your behalf should be clear about the one
+time it talks about itself.
+
+It lives in the main process for two reasons that each settle it on their own:
+the renderer's CSP allows connections only to `127.0.0.1:4567`, and the version
+of the running build is something only Electron knows.
+
+Deliberately not an auto-updater. The installer is 318 MB and unsigned;
+downloading that in the background and swapping the app out is the wrong amount
+of initiative for a program to take. The notice says a version exists and gets
+out of the way.
+
+Failure is silence. Offline, rate-limited, GitHub having a bad day — the check
+returns "nothing to report" rather than an error, because not knowing whether
+an update exists is not a problem the reader can act on.
+
 ## The icon
 
 `build/icon.ico` feeds the .exe, the installer, the shortcut and the

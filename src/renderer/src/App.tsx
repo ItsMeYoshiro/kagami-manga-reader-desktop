@@ -13,6 +13,7 @@ import { LibraryUpdateProvider } from '@/lib/library/LibraryUpdateProvider'
 import { RepositoryProvider } from '@/lib/extensions/RepositoryProvider'
 import { LanguageProvider, useT, type Key } from '@/lib/i18n'
 import { LanguagePicker } from '@/components/LanguagePicker'
+import { UpdateNotice } from '@/components/UpdateNotice'
 import { request } from '@/lib/gql/client'
 import { LIBRARY_QUERY } from '@/lib/gql/operations/library'
 import type { LibraryQuery } from '@/lib/gql/generated/graphql'
@@ -114,6 +115,11 @@ function Shell(): React.ReactNode {
       <main className="min-w-0 flex-1">
         <Outlet />
       </main>
+
+      {/* Floats over whatever screen is open; it has nothing to do with the
+          route, and a reader mid-chapter should not be interrupted by a layout
+          shift. */}
+      <UpdateNotice />
     </div>
   )
 }

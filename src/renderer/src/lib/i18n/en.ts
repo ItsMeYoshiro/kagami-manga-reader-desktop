@@ -195,6 +195,10 @@ export const en: Dictionary = {
   'reader.fit.width': 'Width',
   'reader.fit.height': 'Height',
   'lang.multi': 'Multi-language',
+  'update.title': 'A new version is available',
+  'update.body': 'Kagami {latest} is out. You are on {current}.',
+  'update.action': 'See what changed',
+  'update.dismiss': 'Not now',
   'reader.fit.original': 'Original',
   'reader.zoomReset': 'Ctrl + mouse wheel zooms · click to reset to 100%',
   'reader.autoLongStrip':

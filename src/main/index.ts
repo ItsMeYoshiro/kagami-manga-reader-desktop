@@ -1,6 +1,7 @@
 import { join } from 'node:path'
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { ServerManager } from './server/manager'
+import { checkForUpdate } from './update'
 import { IPC, type ServerStatus } from '../shared/types'
 
 const server = new ServerManager()
@@ -70,6 +71,7 @@ if (!app.requestSingleInstanceLock()) {
   void app.whenReady().then(() => {
     ipcMain.handle(IPC.serverGetStatus, () => server.getStatus())
     ipcMain.handle(IPC.serverRestart, () => server.restart())
+    ipcMain.handle(IPC.updateCheck, () => checkForUpdate())
 
     server.on('status', (status: ServerStatus) => {
       mainWindow?.webContents.send(IPC.serverStatusChanged, status)

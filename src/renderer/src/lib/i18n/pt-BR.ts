@@ -195,6 +195,10 @@ export const ptBR = {
   'reader.fit.width': 'Largura',
   'reader.fit.height': 'Altura',
   'lang.multi': 'Multi-idioma',
+  'update.title': 'Nova versão disponível',
+  'update.body': 'Kagami {latest} foi publicado. Você está na {current}.',
+  'update.action': 'Ver novidades',
+  'update.dismiss': 'Agora não',
   'reader.fit.original': 'Original',
   'reader.zoomReset': 'Ctrl + roda do mouse amplia · clique para voltar a 100%',
   'reader.autoLongStrip':

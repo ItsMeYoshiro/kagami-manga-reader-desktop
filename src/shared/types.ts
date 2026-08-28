@@ -30,8 +30,21 @@ export interface ServerStatus {
   version?: string
 }
 
+/** What the update check found. Absent fields mean it could not tell. */
+export interface UpdateInfo {
+  /** The version of the running build. */
+  current: string
+  /** The newest published release, when GitHub answered. */
+  latest?: string
+  /** Where to read what changed. */
+  url?: string
+  /** True only when `latest` is genuinely newer than `current`. */
+  available: boolean
+}
+
 export const IPC = {
   serverGetStatus: 'server:getStatus',
   serverRestart: 'server:restart',
   serverStatusChanged: 'server:statusChanged',
+  updateCheck: 'update:check',
 } as const

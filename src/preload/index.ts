@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import { IPC, type ServerStatus } from '../shared/types'
+import { IPC, type ServerStatus, type UpdateInfo } from '../shared/types'
 
 /**
  * The only bridge between the renderer and Electron.
@@ -18,6 +18,9 @@ const api = {
       ipcRenderer.on(IPC.serverStatusChanged, listener)
       return () => ipcRenderer.off(IPC.serverStatusChanged, listener)
     },
+  },
+  update: {
+    check: (): Promise<UpdateInfo> => ipcRenderer.invoke(IPC.updateCheck),
   },
 }
 
