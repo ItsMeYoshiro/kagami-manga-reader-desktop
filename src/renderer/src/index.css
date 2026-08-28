@@ -28,7 +28,12 @@
   --color-txt2: #a8a3b6;
   --color-txt3: #6f6b7e;
 
-  /* 藤色 fuji, wisteria. Light enough to carry dark text on top. */
+  /* 藤色 fuji, wisteria. Light enough to carry dark text on top.
+
+     It carries exactly one meaning, which is why it shows up so rarely:
+     THERE IS SOMETHING NEW HERE. The rail counter, the unread pill on a
+     cover, an unread chapter's dot, progress. Everything else is grey, and
+     spending the accent on anything else would cost it that meaning. */
   --color-accent: #c0aef5;
   --color-accent-dim: #8e7bd1;
   --color-accent-ink: #191527;

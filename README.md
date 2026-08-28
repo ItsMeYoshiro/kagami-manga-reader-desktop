@@ -84,6 +84,11 @@ the app freely. To open straight onto a screen:
 KAGAMI_ROUTE=/manga/1 npm run dev
 ```
 
+When testing anything that persists, close the app through its window. A
+`Stop-Process -Force` kills Chromium before it flushes `localStorage` to disk,
+and the preference you just set is gone — which reads exactly like a bug in the
+code that saved it.
+
 ### Layout
 
 ```
@@ -116,11 +121,6 @@ the wrong language. Full guide:
 `.github/workflows/release.yml` runs the same `npm run dist` on a Windows
 runner, attests the installer and attaches it to the release. Trigger it by
 pushing a `v*` tag, or from the Actions tab against an existing tag.
-
-## Design notes
-
-Why the app is built the way it is — the reader, the i18n contract, the
-interface tokens, the extension flow: **[DESIGN.md](DESIGN.md)**.
 
 ## Licences
 
