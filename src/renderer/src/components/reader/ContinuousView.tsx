@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { maxWidthCss, type FitMode, type MaxWidth } from '@/lib/reader/settings'
+import { useZoomOnWheel } from '@/lib/reader/useZoomOnWheel'
 import { useT } from '@/lib/i18n'
 
 const IMG_CLASS: Record<FitMode, string> = {
@@ -28,16 +29,21 @@ export function ContinuousView({
   index,
   fit,
   maxWidth,
+  zoom,
+  onZoom,
   onIndexChange,
 }: {
   pages: string[]
   index: number
   fit: FitMode
   maxWidth: MaxWidth
+  zoom: number
+  onZoom: (zoom: number) => void
   onIndexChange: (i: number) => void
 }): React.ReactNode {
   const t = useT()
   const containerRef = useRef<HTMLDivElement>(null)
+  useZoomOnWheel(containerRef, zoom, onZoom)
   const itemsRef = useRef<(HTMLDivElement | null)[]>([])
   /** Keeps the programmatic restore scroll from firing onIndexChange. */
   const restoredRef = useRef(false)
@@ -86,7 +92,7 @@ export function ContinuousView({
   }, [pages.length, index])
 
   return (
-    <div ref={containerRef} className="h-full w-full overflow-y-auto">
+    <div ref={containerRef} className="h-full w-full overflow-auto">
       {pages.map((src, i) => (
         <div
           key={src}
@@ -102,8 +108,12 @@ export function ContinuousView({
             loading="lazy"
             decoding="async"
             className={`mx-auto ${IMG_CLASS[fit]} select-none`}
-            // The cap only matters for the width fit: it is the only one that upscales.
-            style={fit === 'width' ? { maxWidth: maxWidthCss(maxWidth) } : undefined}
+            style={{
+              // The cap only matters for the width fit: it is the only one that upscales.
+              ...(fit === 'width' ? { maxWidth: maxWidthCss(maxWidth) } : null),
+              // See PagedView: `zoom` changes the layout box, `transform` would not.
+              ...(zoom === 1 ? null : { zoom }),
+            }}
             draggable={false}
           />
         </div>

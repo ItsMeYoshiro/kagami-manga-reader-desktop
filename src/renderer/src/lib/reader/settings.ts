@@ -10,7 +10,20 @@ export interface ReaderSettings {
   mode: ReadingMode
   fit: FitMode
   maxWidth: MaxWidth
+  /** Multiplies whatever the fit mode arrived at. 1 is the fitted size. */
+  zoom: number
 }
+
+/**
+ * Zoom bounds. Below 1 is deliberate: on a tall page, pulling back to see the
+ * whole thing at once is as useful as pushing in on a panel.
+ */
+export const ZOOM_MIN = 0.5
+export const ZOOM_MAX = 4
+/** One wheel notch. Multiplicative, so each step feels the same at any zoom. */
+export const ZOOM_STEP = 1.1
+
+export const clampZoom = (z: number): number => Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, z))
 
 /**
  * Values and labels are kept apart: the values are persisted to localStorage
@@ -56,7 +69,7 @@ export function maxWidthCss(mw: MaxWidth): string | undefined {
 }
 
 // Manga reads right to left; that is the default that surprises the fewest people.
-const DEFAULTS: ReaderSettings = { mode: 'paged-rtl', fit: 'height', maxWidth: 'natural' }
+const DEFAULTS: ReaderSettings = { mode: 'paged-rtl', fit: 'height', maxWidth: 'natural', zoom: 1 }
 const KEY = 'kagami.reader.settings'
 
 function load(): ReaderSettings {
@@ -73,6 +86,12 @@ function load(): ReaderSettings {
         parsed.maxWidth && MAX_WIDTHS.includes(parsed.maxWidth)
           ? parsed.maxWidth
           : DEFAULTS.maxWidth,
+      // A stored zoom is a number from a previous version of the bounds, or
+      // from a hand-edited value: clamp rather than trust it.
+      zoom:
+        typeof parsed.zoom === 'number' && Number.isFinite(parsed.zoom)
+          ? clampZoom(parsed.zoom)
+          : DEFAULTS.zoom,
     }
   } catch {
     // localStorage may be unavailable (private mode, OS policy).

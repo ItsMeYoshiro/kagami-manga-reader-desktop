@@ -110,6 +110,12 @@ export function Reader(): React.ReactNode {
     [setSettings],
   )
 
+  // Zoom goes straight to the settings, never through `override`: magnifying a
+  // panel says nothing about whether the long-strip guess was right, and
+  // treating it as disagreement would throw a webtoon back to paged reading
+  // the moment the reader leaned in on something.
+  const setZoom = useCallback((zoom: number) => setSettings({ zoom }), [setSettings])
+
   // --- Navigation ----------------------------------------------------------
 
   // sourceOrder is the real reading order: chapterNumber jumps (62 -> 1183)
@@ -155,6 +161,13 @@ export function Reader(): React.ReactNode {
       const target = e.target as HTMLElement | null
       if (target && ['SELECT', 'INPUT', 'TEXTAREA'].includes(target.tagName)) return
 
+      // Ctrl+0 is what every other zooming app uses to get back to 100%.
+      if (e.ctrlKey && e.key === '0') {
+        e.preventDefault()
+        setZoom(1)
+        return
+      }
+
       const rtl = view.mode === 'paged-rtl'
       switch (e.key) {
         case 'ArrowRight':
@@ -184,7 +197,7 @@ export function Reader(): React.ReactNode {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [view.mode, nextPage, prevPage, navigate, mangaId])
+  }, [view.mode, nextPage, prevPage, navigate, mangaId, setZoom])
 
   // --- Render --------------------------------------------------------------
 
@@ -253,6 +266,18 @@ export function Reader(): React.ReactNode {
           </select>
         ) : null}
 
+        {/* Only once it is off 100%: a control that always reads "100%" is
+            noise, and its absence is the answer to "why is the page huge". */}
+        {view.zoom === 1 ? null : (
+          <button
+            onClick={() => setZoom(1)}
+            title={t('reader.zoomReset')}
+            className={`${CONTROL} tnum`}
+          >
+            {Math.round(view.zoom * 100)}%
+          </button>
+        )}
+
         <span className="tnum w-20 shrink-0 text-right text-xs text-txt2">
           {index + 1} / {pages.length}
         </span>
@@ -273,6 +298,8 @@ export function Reader(): React.ReactNode {
             mode={view.mode}
             fit={view.fit}
             maxWidth={view.maxWidth}
+            zoom={view.zoom}
+            onZoom={setZoom}
             onPrev={prevPage}
             onNext={nextPage}
           />
@@ -282,6 +309,8 @@ export function Reader(): React.ReactNode {
             index={index}
             fit={view.fit}
             maxWidth={view.maxWidth}
+            zoom={view.zoom}
+            onZoom={setZoom}
             onIndexChange={setIndex}
           />
         )}

@@ -196,6 +196,7 @@ export const en: Dictionary = {
   'reader.fit.height': 'Height',
   'lang.multi': 'Multi-language',
   'reader.fit.original': 'Original',
+  'reader.zoomReset': 'Ctrl + mouse wheel zooms · click to reset to 100%',
   'reader.autoLongStrip':
     'Long-strip chapter detected: continuous, fitted to width. Changing this takes over.',
   'reader.maxWidth.natural': 'Never upscale',

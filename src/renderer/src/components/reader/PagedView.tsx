@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { maxWidthCss, type FitMode, type MaxWidth, type ReadingMode } from '@/lib/reader/settings'
+import { useZoomOnWheel } from '@/lib/reader/useZoomOnWheel'
 import { useT } from '@/lib/i18n'
 
 /**
@@ -32,6 +33,8 @@ export function PagedView({
   mode,
   fit,
   maxWidth,
+  zoom,
+  onZoom,
   onPrev,
   onNext,
 }: {
@@ -40,12 +43,15 @@ export function PagedView({
   mode: ReadingMode
   fit: FitMode
   maxWidth: MaxWidth
+  zoom: number
+  onZoom: (zoom: number) => void
   onPrev: () => void
   onNext: () => void
 }): React.ReactNode {
   const t = useT()
   const rtl = mode === 'paged-rtl'
   const scrollRef = useRef<HTMLDivElement>(null)
+  useZoomOnWheel(scrollRef, zoom, onZoom)
 
   // A page turn should start at the top, or the next page opens mid-way down.
   useEffect(() => {
@@ -58,7 +64,10 @@ export function PagedView({
   return (
     <div
       ref={scrollRef}
-      className={`relative h-full w-full ${fit === 'height' ? 'overflow-hidden' : 'overflow-auto'}`}
+      // The height fit needs no scrolling by definition -- until zoom takes
+      // the page past the viewport, and then hiding the overflow would put the
+      // zoomed-in part out of reach.
+      className={`relative h-full w-full ${fit === 'height' && zoom === 1 ? 'overflow-hidden' : 'overflow-auto'}`}
     >
       <div className={WRAP_CLASS[fit]}>
         <img
@@ -66,8 +75,14 @@ export function PagedView({
           src={src}
           alt={t('reader.page', { n: index + 1 })}
           className={`${IMG_CLASS[fit]} select-none`}
-          // The cap only matters for the width fit: it is the only one that upscales.
-          style={fit === 'width' ? { maxWidth: maxWidthCss(maxWidth) } : undefined}
+          style={{
+            // The cap only matters for the width fit: it is the only one that upscales.
+            ...(fit === 'width' ? { maxWidth: maxWidthCss(maxWidth) } : null),
+            // `zoom`, not `transform: scale()`: a transform does not change the
+            // layout box, so the scroll container would never grow and the
+            // magnified page could not be scrolled to.
+            ...(zoom === 1 ? null : { zoom }),
+          }}
           draggable={false}
         />
       </div>

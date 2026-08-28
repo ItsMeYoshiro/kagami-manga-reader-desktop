@@ -196,6 +196,7 @@ export const ptBR = {
   'reader.fit.height': 'Altura',
   'lang.multi': 'Multi-idioma',
   'reader.fit.original': 'Original',
+  'reader.zoomReset': 'Ctrl + roda do mouse amplia · clique para voltar a 100%',
   'reader.autoLongStrip':
     'Capítulo em tira longa detectado: contínuo, ajustado pela largura. Trocar aqui assume o controle.',
   'reader.maxWidth.natural': 'Sem ampliar',

@@ -264,6 +264,35 @@ page is ~3000 px tall; in a ~700 px viewport the highest possible ratio is ~0.22
 so any threshold above that never fires and the index freezes — taking reading
 progress with it.
 
+### Zoom
+
+**Ctrl + wheel**, anchored at the pointer; `Ctrl+0` or the percentage in the
+header goes back to 100%. Bounds are 0.5x to 4x, one wheel notch being a
+multiplication by 1.1 -- so a step feels the same at any zoom.
+
+It is the CSS `zoom` property, not `transform: scale()`. A transform paints
+larger without changing the layout box, so the scroll container never grows and
+the magnified part of the page cannot be scrolled to. `zoom` multiplies
+whatever the fit mode arrived at, which is why it composes with all three
+instead of replacing them. The paged view drops its `overflow-hidden` as soon
+as zoom leaves 1, or the height fit would hide what was just magnified.
+
+Two details that are easy to get wrong:
+
+- **The listener is registered by hand, non-passive.** React attaches `onWheel`
+  as passive, where `preventDefault` does nothing -- and without it Chromium
+  runs its own Ctrl+wheel handler and zooms the entire window, interface
+  included.
+- **Anchoring is measured against the page, not the scrolled content.** A page
+  narrower than the window is centred, and that side margin shrinks as the page
+  grows, so content coordinates do not simply scale while a fraction of the page
+  does.
+
+Zoom is written straight to the settings, never through the long-strip
+override: magnifying a panel says nothing about whether the webtoon guess was
+right, and treating it as disagreement would throw the chapter back to paged
+reading the moment the reader leaned in.
+
 Shortcuts: arrows and space turn the page (following the mode's direction),
 `Esc` goes back to the title's screen. In paged mode, clicking either half of
 the screen also navigates.
