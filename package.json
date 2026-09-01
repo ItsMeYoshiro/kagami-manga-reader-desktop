@@ -1,6 +1,6 @@
 {
   "name": "kagami",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A desktop manga reader built on Mihon's extension ecosystem",
   "main": "./out/main/index.js",
   "author": "Kaio Barbosa",
