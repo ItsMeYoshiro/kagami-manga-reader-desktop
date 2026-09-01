@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useMutation, useQuery } from '@tanstack/react-query'
-import { assetUrl, request } from '@/lib/gql/client'
+import { useChapterPages } from '@/lib/reader/useChapterPages'
+import { useChapterNav } from '@/lib/reader/useChapterNav'
 import { usePreload } from '@/lib/reader/usePreload'
 import { useReadingProgress } from '@/lib/reader/useReadingProgress'
 import { useLongStrip } from '@/lib/reader/useLongStrip'
@@ -24,14 +24,6 @@ import { ContinuousView } from '@/components/reader/ContinuousView'
 import { IconButton } from '@/components/ui'
 import { BackIcon } from '@/components/ui/Icons'
 import { useT } from '@/lib/i18n'
-import {
-  FETCH_CHAPTER_PAGES_MUTATION,
-  READER_CHAPTER_QUERY,
-} from '@/lib/gql/operations/reader'
-import type {
-  FetchChapterPagesMutation,
-  ReaderChapterQuery,
-} from '@/lib/gql/generated/graphql'
 
 /** The three header selects share one look. */
 const CONTROL =
@@ -43,44 +35,8 @@ export function Reader(): React.ReactNode {
   const navigate = useNavigate()
   const t = useT()
   const [settings, setSettings] = useReaderSettings()
-  const [index, setIndex] = useState(0)
 
-  const chapterQuery = useQuery({
-    queryKey: ['reader-chapter', id],
-    queryFn: () => request<ReaderChapterQuery>(READER_CHAPTER_QUERY, { chapterId: id }),
-    enabled: Number.isFinite(id),
-  })
-  const chapter = chapterQuery.data?.chapter
-
-  const pagesMutation = useMutation({
-    mutationFn: (target: number) =>
-      request<FetchChapterPagesMutation>(FETCH_CHAPTER_PAGES_MUTATION, { chapterId: target }),
-  })
-
-  // Fires once per chapter. The ref stops a refetch when the effect re-runs
-  // because the mutation's identity changed.
-  const fetchedFor = useRef<number | null>(null)
-  const { mutate: fetchPages } = pagesMutation
-  useEffect(() => {
-    if (!Number.isFinite(id) || fetchedFor.current === id) return
-    fetchedFor.current = id
-    setIndex(0)
-    fetchPages(id)
-  }, [id, fetchPages])
-
-  const pages = useMemo(
-    () => (pagesMutation.data?.fetchChapterPages?.pages ?? []).map((p) => assetUrl(p) ?? p),
-    [pagesMutation.data],
-  )
-
-  // Resume where the reader left off, but only once the pages exist.
-  const restored = useRef<number | null>(null)
-  useEffect(() => {
-    if (pages.length === 0 || !chapter || restored.current === id) return
-    restored.current = id
-    const saved = chapter.lastPageRead
-    if (saved > 0 && saved < pages.length) setIndex(saved)
-  }, [pages.length, chapter, id])
+  const { chapter, pages, index, setIndex, isLoading, error } = useChapterPages(id)
 
   usePreload(pages, index)
   useReadingProgress(Number(mangaId), id, index, pages.length)
@@ -118,41 +74,13 @@ export function Reader(): React.ReactNode {
 
   // --- Navigation ----------------------------------------------------------
 
-  // sourceOrder is the real reading order: chapterNumber jumps (62 -> 1183)
-  // when a source has gaps in its translations.
-  const siblings = useMemo(() => {
-    const nodes = chapter?.manga.chapters.nodes ?? []
-    return [...nodes].sort((a, b) => a.sourceOrder - b.sourceOrder)
-  }, [chapter])
-
-  const position = siblings.findIndex((c) => c.id === id)
-  const prevChapter = position > 0 ? siblings[position - 1] : null
-  const nextChapter =
-    position >= 0 && position < siblings.length - 1 ? siblings[position + 1] : null
-
-  const goChapter = useCallback(
-    (target: { id: number } | null) => {
-      if (!target) return
-      navigate(`/manga/${mangaId}/chapter/${target.id}`, { replace: true })
-    },
-    [navigate, mangaId],
-  )
-
-  const nextPage = useCallback(() => {
-    setIndex((i) => {
-      if (i < pages.length - 1) return i + 1
-      goChapter(nextChapter)
-      return i
-    })
-  }, [pages.length, nextChapter, goChapter])
-
-  const prevPage = useCallback(() => {
-    setIndex((i) => {
-      if (i > 0) return i - 1
-      goChapter(prevChapter)
-      return i
-    })
-  }, [prevChapter, goChapter])
+  const { prevChapter, nextChapter, goChapter, nextPage, prevPage } = useChapterNav({
+    mangaId,
+    id,
+    chapter,
+    pageCount: pages.length,
+    setIndex,
+  })
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
@@ -201,13 +129,13 @@ export function Reader(): React.ReactNode {
 
   // --- Render --------------------------------------------------------------
 
-  if (pagesMutation.isPending || chapterQuery.isLoading) {
+  if (isLoading) {
     return <div className="grid h-full place-items-center text-[13px] text-txt3">{t('reader.loading')}</div>
   }
-  if (pagesMutation.isError) {
+  if (error) {
     return (
       <div className="grid h-full place-items-center px-8 text-center text-[13px] text-danger">
-        {(pagesMutation.error as Error).message}
+        {error.message}
       </div>
     )
   }
