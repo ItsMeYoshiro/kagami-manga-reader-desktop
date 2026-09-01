@@ -6,7 +6,7 @@ import { useT } from '@/lib/i18n'
 
 const ITEM_CLASS: Record<FitMode, string> = {
   width: 'w-full',
-  height: 'flex h-full w-full items-center justify-center',
+  height: 'flex h-full w-full items-center-safe justify-center-safe',
   original: 'w-full',
 }
 
@@ -100,7 +100,7 @@ export function ContinuousView({
             alt={t('reader.page', { n: i + 1 })}
             loading="lazy"
             decoding="async"
-            {...pageImageProps(fit, maxWidth, zoom, 'mx-auto')}
+            {...pageImageProps(fit, maxWidth, zoom)}
             draggable={false}
           />
         </div>

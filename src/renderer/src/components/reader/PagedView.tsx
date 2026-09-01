@@ -5,9 +5,9 @@ import { useZoomOnWheel } from '@/lib/reader/useZoomOnWheel'
 import { useT } from '@/lib/i18n'
 
 const WRAP_CLASS: Record<FitMode, string> = {
-  width: 'flex min-h-full items-start justify-center',
-  height: 'flex h-full w-full items-center justify-center',
-  original: 'flex min-h-full items-start justify-center',
+  width: 'min-h-full',
+  height: 'flex h-full w-full items-center-safe justify-center-safe',
+  original: 'min-h-full',
 }
 
 /**
