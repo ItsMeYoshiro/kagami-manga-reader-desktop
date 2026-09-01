@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { assetUrl, request } from '@/lib/gql/client'
+import { useSources } from '@/lib/queries'
 import { MangaGrid, type MangaCard } from '@/components/MangaGrid'
 import { Button, EmptyState, ErrorNote, IconButton, SearchField, TopBar } from '@/components/ui'
 import { BackIcon } from '@/components/ui/Icons'
 import { useT } from '@/lib/i18n'
-import type { SearchSourceMutation, SourcesQuery } from '@/lib/gql/generated/graphql'
+import type { SearchSourceMutation } from '@/lib/gql/generated/graphql'
 import {
-  SOURCES_QUERY,
   SEARCH_SOURCE_MUTATION,
   POPULAR_SOURCE_MUTATION,
 } from '@/lib/gql/operations/sources'
@@ -37,10 +37,7 @@ export function BrowseSource(): React.ReactNode {
     setTerm(query)
   }, [query])
 
-  const sources = useQuery({
-    queryKey: ['sources'],
-    queryFn: () => request<SourcesQuery>(SOURCES_QUERY),
-  })
+  const sources = useSources()
   const source = sources.data?.sources.nodes.find((s) => s.id === sourceId)
 
   const list = useInfiniteQuery({

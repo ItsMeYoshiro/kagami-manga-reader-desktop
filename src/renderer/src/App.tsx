@@ -1,5 +1,4 @@
 import { HashRouter, NavLink, Navigate, Outlet, Route, Routes } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
 import { ServerGate } from '@/components/ServerGate'
 import { Library } from '@/routes/Library'
 import { Browse } from '@/routes/Browse'
@@ -15,9 +14,7 @@ import { LanguageProvider, useT, type Key } from '@/lib/i18n'
 import { LanguagePicker } from '@/components/LanguagePicker'
 import { SettingsMenu } from '@/components/SettingsMenu'
 import { UpdateNotice } from '@/components/UpdateNotice'
-import { request } from '@/lib/gql/client'
-import { LIBRARY_QUERY } from '@/lib/gql/operations/library'
-import type { LibraryQuery } from '@/lib/gql/generated/graphql'
+import { useLibrary } from '@/lib/queries'
 import { BrowseIcon, DownloadIcon, ExtensionIcon, LibraryIcon } from '@/components/ui/Icons'
 
 type Destination = {
@@ -79,12 +76,9 @@ function RailItem({ destination, badge }: { destination: Destination; badge: num
 function Shell(): React.ReactNode {
   const { queue } = useDownloads()
 
-  // Same key the Library screen uses: the rail's counter reuses the cache
-  // instead of opening a second request.
-  const library = useQuery({
-    queryKey: ['library'],
-    queryFn: () => request<LibraryQuery>(LIBRARY_QUERY),
-  })
+  // The same hook the Library screen calls: the rail's counter reuses that
+  // screen's cache entry instead of opening a second request.
+  const library = useLibrary()
   const unread = (library.data?.mangas.nodes ?? []).reduce((sum, m) => sum + m.unreadCount, 0)
 
   const badgeFor = (to: string): number => {

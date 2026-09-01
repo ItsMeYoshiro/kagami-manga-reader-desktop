@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { request } from '@/lib/gql/client'
+import { useSources } from '@/lib/queries'
 import { compareText, languageName } from '@/lib/intl'
 import { useLanguage } from '@/lib/i18n'
 import { useRepository } from '@/lib/extensions/RepositoryProvider'
@@ -24,11 +25,9 @@ import {
   FETCH_EXTENSIONS_MUTATION,
   UPDATE_EXTENSION_MUTATION,
 } from '@/lib/gql/operations/extensions'
-import { SOURCES_QUERY } from '@/lib/gql/operations/sources'
 import type {
   ExtensionsQuery,
   FetchExtensionsMutation,
-  SourcesQuery,
   UpdateExtensionMutation,
 } from '@/lib/gql/generated/graphql'
 
@@ -58,10 +57,7 @@ export function Extensions(): React.ReactNode {
     queryFn: () => request<ExtensionsQuery>(EXTENSIONS_QUERY),
   })
 
-  const sources = useQuery({
-    queryKey: ['sources'],
-    queryFn: () => request<SourcesQuery>(SOURCES_QUERY),
-  })
+  const sources = useSources()
 
   // An installed extension becomes one or more sources, and it is the source —
   // not the extension — that has a catalog. This index is what lets the catalog

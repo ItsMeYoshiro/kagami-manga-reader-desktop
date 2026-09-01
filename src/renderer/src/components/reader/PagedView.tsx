@@ -1,21 +1,8 @@
 import { useEffect, useRef } from 'react'
-import { maxWidthCss, type FitMode, type MaxWidth, type ReadingMode } from '@/lib/reader/settings'
+import { type FitMode, type MaxWidth, type ReadingMode } from '@/lib/reader/settings'
+import { pageImageProps } from '@/lib/reader/pageImage'
 import { useZoomOnWheel } from '@/lib/reader/useZoomOnWheel'
 import { useT } from '@/lib/i18n'
-
-/**
- * The height fit cannot rely on `max-height: 100%`: the percentage resolves
- * against a parent of automatic height (or a content-sized grid row), falls
- * back to the natural size and overflows the container.
- *
- * The way out is to give the image a definitely-sized box — inherited from a
- * parent with `h-full` — and let `object-contain` fit the content inside it.
- */
-const IMG_CLASS: Record<FitMode, string> = {
-  width: 'w-full h-auto',
-  height: 'h-full w-full object-contain',
-  original: 'max-w-none',
-}
 
 const WRAP_CLASS: Record<FitMode, string> = {
   width: 'flex min-h-full items-start justify-center',
@@ -74,15 +61,7 @@ export function PagedView({
           key={src}
           src={src}
           alt={t('reader.page', { n: index + 1 })}
-          className={`${IMG_CLASS[fit]} select-none`}
-          style={{
-            // The cap only matters for the width fit: it is the only one that upscales.
-            ...(fit === 'width' ? { maxWidth: maxWidthCss(maxWidth) } : null),
-            // `zoom`, not `transform: scale()`: a transform does not change the
-            // layout box, so the scroll container would never grow and the
-            // magnified page could not be scrolled to.
-            ...(zoom === 1 ? null : { zoom }),
-          }}
+          {...pageImageProps(fit, maxWidth, zoom)}
           draggable={false}
         />
       </div>

@@ -1,15 +1,8 @@
 import { useEffect, useRef } from 'react'
-import { maxWidthCss, type FitMode, type MaxWidth } from '@/lib/reader/settings'
+import { type FitMode, type MaxWidth } from '@/lib/reader/settings'
+import { pageImageProps } from '@/lib/reader/pageImage'
 import { useZoomOnWheel } from '@/lib/reader/useZoomOnWheel'
 import { useT } from '@/lib/i18n'
-
-const IMG_CLASS: Record<FitMode, string> = {
-  width: 'w-full h-auto',
-  // Same trap as PagedView: a percentage needs a definite height on the
-  // parent, so the box comes from the item (h-full) and object-contain fits.
-  height: 'h-full w-full object-contain',
-  original: 'max-w-none',
-}
 
 const ITEM_CLASS: Record<FitMode, string> = {
   width: 'w-full',
@@ -107,13 +100,7 @@ export function ContinuousView({
             alt={t('reader.page', { n: i + 1 })}
             loading="lazy"
             decoding="async"
-            className={`mx-auto ${IMG_CLASS[fit]} select-none`}
-            style={{
-              // The cap only matters for the width fit: it is the only one that upscales.
-              ...(fit === 'width' ? { maxWidth: maxWidthCss(maxWidth) } : null),
-              // See PagedView: `zoom` changes the layout box, `transform` would not.
-              ...(zoom === 1 ? null : { zoom }),
-            }}
+            {...pageImageProps(fit, maxWidth, zoom, 'mx-auto')}
             draggable={false}
           />
         </div>

@@ -1,16 +1,16 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useQueries, useQuery } from '@tanstack/react-query'
+import { useQueries } from '@tanstack/react-query'
 import { request } from '@/lib/gql/client'
+import { useSources } from '@/lib/queries'
 import { limitSearch } from '@/lib/concurrency'
 import { compareText, languageName } from '@/lib/intl'
 import { useLanguage } from '@/lib/i18n'
 import { SourceRow, PER_SOURCE } from '@/components/SourceRow'
 import { Button, EmptyState, ScreenTitle, SearchField, Select, TopBar } from '@/components/ui'
 import type { MangaCard } from '@/components/MangaGrid'
-import type { SearchSourceMutation, SourcesQuery } from '@/lib/gql/generated/graphql'
+import type { SearchSourceMutation } from '@/lib/gql/generated/graphql'
 import {
-  SOURCES_QUERY,
   SEARCH_SOURCE_MUTATION,
   POPULAR_SOURCE_MUTATION,
 } from '@/lib/gql/operations/sources'
@@ -49,10 +49,7 @@ export function Browse(): React.ReactNode {
 
   const wanted = languageParam || storedSourceLanguage()
 
-  const sources = useQuery({
-    queryKey: ['sources'],
-    queryFn: () => request<SourcesQuery>(SOURCES_QUERY),
-  })
+  const sources = useSources()
 
   // The local source (id 0) is not browsable like the remote ones; leave it out.
   const remote = useMemo(

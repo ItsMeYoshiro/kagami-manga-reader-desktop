@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { request } from '@/lib/gql/client'
+import { useLibrary } from '@/lib/queries'
 import { MangaGrid } from '@/components/MangaGrid'
 import { formatDateTime } from '@/lib/format'
 import { useLanguage } from '@/lib/i18n'
@@ -9,12 +10,11 @@ import { useLibraryUpdate } from '@/lib/library/LibraryUpdateProvider'
 import { UpdateFilters } from '@/components/UpdateFilters'
 import { Button, Chip, EmptyState, ErrorNote, ScreenTitle, TopBar } from '@/components/ui'
 import { RefreshIcon } from '@/components/ui/Icons'
-import { LIBRARY_QUERY } from '@/lib/gql/operations/library'
 import {
   STOP_UPDATE_MUTATION,
   UPDATE_LIBRARY_MUTATION,
 } from '@/lib/gql/operations/libraryUpdate'
-import type { LibraryQuery, UpdateLibraryMutation } from '@/lib/gql/generated/graphql'
+import type { UpdateLibraryMutation } from '@/lib/gql/generated/graphql'
 
 export function Library(): React.ReactNode {
   const qc = useQueryClient()
@@ -22,10 +22,7 @@ export function Library(): React.ReactNode {
   const { t, tp } = useLanguage()
   const { running, done, total, skipped, lastUpdate, connected } = useLibraryUpdate()
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['library'],
-    queryFn: () => request<LibraryQuery>(LIBRARY_QUERY),
-  })
+  const { data, isLoading, error } = useLibrary()
 
   const update = useMutation({
     mutationFn: () => request<UpdateLibraryMutation>(UPDATE_LIBRARY_MUTATION),
