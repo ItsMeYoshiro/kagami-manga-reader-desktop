@@ -76,6 +76,9 @@ export function MangaDetail(): React.ReactNode {
   }
 
   const chapters = manga.chapters.nodes
+  // Sources repeat genres -- some list the same tag once per language entry.
+  // Left alone that is both a duplicated chip and a duplicated React key.
+  const genres = [...new Set(manga.genre)]
   const read = chapters.filter((c) => c.isRead).length
   const cover = manga.thumbnailUrl ? assetUrl(manga.thumbnailUrl) : null
 
@@ -185,9 +188,9 @@ export function MangaDetail(): React.ReactNode {
                 </div>
               ) : null}
 
-              {manga.genre.length > 0 ? (
+              {genres.length > 0 ? (
                 <div className="mt-4 flex flex-wrap gap-1.5">
-                  {manga.genre.map((g) => (
+                  {genres.map((g) => (
                     <span
                       key={g}
                       className="rounded-full px-2.5 py-1 text-[11px] text-txt2 ring-1 ring-inset ring-line"

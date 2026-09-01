@@ -83,14 +83,6 @@ export function BackIcon({ className }: Props): React.ReactNode {
   )
 }
 
-export function SearchIcon({ className }: Props): React.ReactNode {
-  return (
-    <svg {...base} className={className} width="18" height="18" aria-hidden="true">
-      <circle cx="10.5" cy="10.5" r="6.5" />
-      <path d="M15.4 15.4L20 20" />
-    </svg>
-  )
-}
 
 export function RefreshIcon({ className }: Props): React.ReactNode {
   return (

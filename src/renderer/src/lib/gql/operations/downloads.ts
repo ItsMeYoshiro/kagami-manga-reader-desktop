@@ -90,15 +90,6 @@ export const ENQUEUE_DOWNLOAD_MUTATION = gql`
   }
 `
 
-export const ENQUEUE_DOWNLOADS_MUTATION = gql`
-  mutation EnqueueDownloads($ids: [Int!]!) {
-    enqueueChapterDownloads(input: { ids: $ids }) {
-      downloadStatus {
-        state
-      }
-    }
-  }
-`
 
 export const DEQUEUE_DOWNLOADS_MUTATION = gql`
   mutation DequeueDownloads($ids: [Int!]!) {

@@ -21,9 +21,6 @@ export function getClient(): GraphQLClient {
   return client
 }
 
-export function getBaseUrl(): string {
-  return baseUrl
-}
 
 /** Absolute URL of an asset served by Suwayomi (covers, pages). */
 export function assetUrl(path: string | null | undefined): string | undefined {
