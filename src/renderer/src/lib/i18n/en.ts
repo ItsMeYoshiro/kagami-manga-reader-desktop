@@ -142,6 +142,9 @@ export const en: Dictionary = {
   'ext.tab.installed': 'Installed ({n})',
   'ext.tab.updates': 'Updates ({n})',
   'ext.tab.available': 'Available ({n})',
+  'ext.actionError': 'Could not finish that on {name}. {error}',
+  'ext.actionRefused':
+    'The server turned it down without saying why — the download may have failed, or the extension may have left the repository.',
   'ext.repoError': "Could not load the {name} repository's catalog: {error}",
   'ext.repoRetry': 'Try again',
   'ext.loadingCatalog': 'Loading catalog…',

@@ -143,6 +143,9 @@ export const ptBR = {
   'ext.tab.installed': 'Instaladas ({n})',
   'ext.tab.updates': 'Atualizações ({n})',
   'ext.tab.available': 'Disponíveis ({n})',
+  'ext.actionError': 'Não deu para concluir isso em {name}. {error}',
+  'ext.actionRefused':
+    'O servidor recusou sem dizer por quê — o download pode ter falhado, ou a extensão pode ter saído do repositório.',
   'ext.repoError': 'Não deu para carregar o catálogo do repositório {name}: {error}',
   'ext.repoRetry': 'Tentar de novo',
   'ext.loadingCatalog': 'Carregando catálogo…',

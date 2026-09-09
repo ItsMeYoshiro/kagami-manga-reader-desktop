@@ -85,13 +85,21 @@ export function Extensions(): React.ReactNode {
   // download and a dex2jar conversion, so the button has to show it is busy.
   const [busyPkg, setBusyPkg] = useState<string | null>(null)
   const action = useMutation({
-    mutationFn: (v: { id: string } & ExtensionAction) =>
-      request<UpdateExtensionMutation>(UPDATE_EXTENSION_MUTATION, {
+    mutationFn: async (v: { id: string } & ExtensionAction) => {
+      const result = await request<UpdateExtensionMutation>(UPDATE_EXTENSION_MUTATION, {
         id: v.id,
         install: v.install ?? null,
         uninstall: v.uninstall ?? null,
         update: v.update ?? null,
-      }),
+      })
+      // A refused install, update or removal does not come back as an error.
+      // The server answers 200 with a null extension and no `errors` entry, so
+      // the request layer reads it as a success. Left alone the button stops
+      // spinning, the row refetches unchanged and nothing tells the two apart
+      // -- which is exactly what "I pressed update and nothing happened" is.
+      if (!result.updateExtension?.extension) throw new Error(t('ext.actionRefused'))
+      return result
+    },
     onSettled: () => {
       setBusyPkg(null)
       void qc.invalidateQueries({ queryKey: ['extensions'] })
@@ -200,6 +208,15 @@ export function Extensions(): React.ReactNode {
           </FilterChip>
         ))}
       </div>
+
+      {action.error ? (
+        <ErrorNote>
+          {t('ext.actionError', {
+            name: all.find((e) => e.pkgName === action.variables?.id)?.name ?? '',
+            error: errorMessage(action.error),
+          })}
+        </ErrorNote>
+      ) : null}
 
       {repository.error ? (
         <ErrorNote>
