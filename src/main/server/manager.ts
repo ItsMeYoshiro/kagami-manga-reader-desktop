@@ -56,8 +56,27 @@ export class ServerManager extends EventEmitter {
     this.child = spawn(
       paths.javaExe,
       [
-        '-XX:+UseSerialGC',
-        '-Xmx512m',
+        // Memory. Measured with the same workload (library, sources,
+        // extensions, two chapters' pages) and 75s of idle afterwards: 471 MB
+        // with the old SerialGC/-Xmx512m, 365 MB with these.
+        //
+        // After a full GC only ~81 MB of the heap is live, yet SerialGC kept
+        // 213 MB committed: it only hands memory back to Windows on a full GC,
+        // and those almost never happen. G1's periodic collection runs one
+        // while the app sits idle, and the free-ratio bounds make it actually
+        // give the slack back. Lowering -Xmx alone did nothing (476 MB).
+        '-XX:+UseG1GC',
+        '-Xmx384m',
+        '-XX:G1PeriodicGCInterval=15000',
+        '-XX:MinHeapFreeRatio=10',
+        '-XX:MaxHeapFreeRatio=20',
+        // C1 only, and a smaller cache for what it compiles. The server spends
+        // its time waiting on the network: the same workload took 20.8s either
+        // way, and startup got no slower.
+        '-XX:TieredStopAtLevel=1',
+        '-XX:ReservedCodeCacheSize=48m',
+        // ~95 threads, most of them idle pool workers.
+        '-Xss512k',
         `-Dsuwayomi.tachidesk.config.server.ip=${HOST}`,
         `-Dsuwayomi.tachidesk.config.server.port=${PORT}`,
         '-Dsuwayomi.tachidesk.config.server.initialOpenInBrowserEnabled=false',
